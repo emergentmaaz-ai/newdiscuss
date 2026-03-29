@@ -1,10 +1,16 @@
 import axios from 'axios';
 
-// Fallback to window.location.origin if REACT_APP_BACKEND_URL is not set
-const API_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
+// Get backend URL - MUST be set in environment variables for deployment
+const API_URL = process.env.REACT_APP_BACKEND_URL;
+
+// Warn if not configured (for deployment debugging)
+if (!API_URL) {
+  console.error('ERROR: REACT_APP_BACKEND_URL is not set! API calls will fail.');
+  console.error('Set REACT_APP_BACKEND_URL in your deployment environment variables (Netlify/Vercel)');
+}
 
 const api = axios.create({
-  baseURL: `${API_URL}/api`,
+  baseURL: `${API_URL || ''}/api`,
   withCredentials: true,
   headers: { 'Content-Type': 'application/json' },
 });
