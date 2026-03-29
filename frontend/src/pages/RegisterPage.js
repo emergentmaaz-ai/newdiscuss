@@ -5,6 +5,7 @@ import { checkUsernameAvailable, checkEmailAvailable, getAdminSettings } from '@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import TermsModal from '@/components/TermsModal';
+import LoadingScreen from '@/components/LoadingScreen';
 import { Eye, EyeOff, Loader2, CheckCircle2, XCircle, AlertCircle, Shield } from 'lucide-react';
 
 const LOGO_URL = 'https://customer-assets.emergentagent.com/job_8b258d09-2813-4c39-875f-1044b1a2ed97/artifacts/bnfmcn2l_rqVRL__1_-removebg-preview.png';
@@ -28,11 +29,18 @@ export default function RegisterPage() {
   const [showTerms, setShowTerms] = useState(false);
   const [signupEnabled, setSignupEnabled] = useState(true);
   const [settingsLoading, setSettingsLoading] = useState(true);
+  const [pageLoading, setPageLoading] = useState(true);
   
   const usernameTimeout = useRef(null);
   const emailTimeout = useRef(null);
   const { register, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
+
+  // Page loading effect
+  useEffect(() => {
+    const timer = setTimeout(() => setPageLoading(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Check admin settings
   useEffect(() => {
@@ -139,12 +147,8 @@ export default function RegisterPage() {
     return 'text-[#64748B]';
   };
 
-  if (settingsLoading) {
-    return (
-      <div className="min-h-screen bg-[#F0F4FA] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-[#CC0000]" />
-      </div>
-    );
+  if (pageLoading || settingsLoading) {
+    return <LoadingScreen message="Loading registration..." />;
   }
 
   return (

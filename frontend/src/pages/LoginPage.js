@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import TermsModal from '@/components/TermsModal';
+import LoadingScreen from '@/components/LoadingScreen';
 import { Eye, EyeOff, Loader2, XCircle, Shield, AlertCircle } from 'lucide-react';
 
 const LOGO_URL = 'https://customer-assets.emergentagent.com/job_8b258d09-2813-4c39-875f-1044b1a2ed97/artifacts/bnfmcn2l_rqVRL__1_-removebg-preview.png';
@@ -28,8 +29,18 @@ export default function LoginPage() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
   const [showForgotDisabled, setShowForgotDisabled] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
   const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const timer = setTimeout(() => setPageLoading(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (pageLoading) {
+    return <LoadingScreen message="Loading login..." />;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();

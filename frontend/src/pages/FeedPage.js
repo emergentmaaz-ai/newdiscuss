@@ -4,6 +4,7 @@ import { getPosts, getTrendingHashtags, subscribeToPostsRealtime } from '@/lib/d
 import Header from '@/components/Header';
 import PostCard from '@/components/PostCard';
 import CreatePostModal from '@/components/CreatePostModal';
+import LoadingScreen from '@/components/LoadingScreen';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Plus, MessageSquare, WifiOff, Loader2, Search, X, Hash, TrendingUp } from 'lucide-react';
@@ -12,11 +13,17 @@ export default function FeedPage() {
   const { user } = useAuth();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [pageLoading, setPageLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeSearch, setActiveSearch] = useState('');
   const [trendingTags, setTrendingTags] = useState([]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setPageLoading(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const fetchPosts = useCallback(async (search = '') => {
     try {
@@ -118,6 +125,10 @@ export default function FeedPage() {
       )
     );
   };
+
+  if (pageLoading) {
+    return <LoadingScreen message="Loading your feed..." />;
+  }
 
   return (
     <div className="min-h-screen bg-[#F0F4FA]">

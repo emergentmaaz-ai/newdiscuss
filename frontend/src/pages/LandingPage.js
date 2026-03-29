@@ -1,7 +1,10 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
+import LoadingScreen from '@/components/LoadingScreen';
+import PWAInstallBanner from '@/components/PWAInstallBanner';
 import { ArrowRight, MessageSquare, FolderGit2, Zap, Users, Shield, Linkedin } from 'lucide-react';
 
 const LOGO_URL = 'https://customer-assets.emergentagent.com/job_8b258d09-2813-4c39-875f-1044b1a2ed97/artifacts/bnfmcn2l_rqVRL__1_-removebg-preview.png';
@@ -14,10 +17,24 @@ const features = [
 
 export default function LandingPage() {
   const { user } = useAuth();
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate loading for realistic feel
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return <LoadingScreen message="Preparing your experience..." />;
+  }
 
   return (
     <div className="min-h-screen bg-[#F0F4FA]">
       <Header />
+      <PWAInstallBanner />
 
       {/* Hero */}
       <section className="pt-16 pb-20 px-4 md:px-8">
