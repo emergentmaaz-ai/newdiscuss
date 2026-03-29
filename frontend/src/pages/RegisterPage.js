@@ -5,7 +5,7 @@ import { checkUsernameAvailable, checkEmailAvailable, getAdminSettings } from '@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import TermsModal from '@/components/TermsModal';
-import { Eye, EyeOff, Loader2, CheckCircle2, XCircle, AlertCircle, Shield, Linkedin } from 'lucide-react';
+import { Eye, EyeOff, Loader2, CheckCircle2, XCircle, AlertCircle, Shield } from 'lucide-react';
 
 const LOGO_URL = 'https://customer-assets.emergentagent.com/job_8b258d09-2813-4c39-875f-1044b1a2ed97/artifacts/bnfmcn2l_rqVRL__1_-removebg-preview.png';
 
@@ -301,16 +301,8 @@ export default function RegisterPage() {
       {/* Footer */}
       <footer className="py-4 text-center">
         <p className="text-[#94A3B8] text-[12px]">
-          Developed and managed by{' '}
-          <a 
-            href="https://www.linkedin.com/in/mohammed-maaz-a-0aa730217/" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="text-[#CC0000] hover:underline font-semibold inline-flex items-center gap-1"
-          >
-            Mohammed Maaz A
-            <Linkedin className="w-3 h-3" />
-          </a>
+          Developed by{' '}
+          <span className="text-[#CC0000] font-semibold">&lt;Mohammed Maaz A&gt;</span>
         </p>
       </footer>
 

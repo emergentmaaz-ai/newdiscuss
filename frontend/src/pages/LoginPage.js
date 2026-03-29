@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { getAdminSettings } from '@/lib/db';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import TermsModal from '@/components/TermsModal';
-import { Eye, EyeOff, Loader2, XCircle, Shield, AlertCircle, Linkedin } from 'lucide-react';
+import { Eye, EyeOff, Loader2, XCircle, Shield, AlertCircle } from 'lucide-react';
 
 const LOGO_URL = 'https://customer-assets.emergentagent.com/job_8b258d09-2813-4c39-875f-1044b1a2ed97/artifacts/bnfmcn2l_rqVRL__1_-removebg-preview.png';
 
@@ -29,15 +28,8 @@ export default function LoginPage() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
   const [showForgotDisabled, setShowForgotDisabled] = useState(false);
-  const [forgotPasswordEnabled, setForgotPasswordEnabled] = useState(true);
   const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    getAdminSettings().then(settings => {
-      setForgotPasswordEnabled(settings.forgot_password_enabled !== false);
-    }).catch(() => {});
-  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -61,12 +53,7 @@ export default function LoginPage() {
   };
 
   const handleForgotPassword = () => {
-    if (!forgotPasswordEnabled) {
-      setShowForgotDisabled(true);
-    } else {
-      // TODO: Implement forgot password flow
-      alert('Password reset functionality coming soon!');
-    }
+    setShowForgotDisabled(true);
   };
 
   return (
@@ -173,16 +160,8 @@ export default function LoginPage() {
       {/* Footer */}
       <footer className="py-4 text-center">
         <p className="text-[#94A3B8] text-[12px]">
-          Developed and managed by{' '}
-          <a 
-            href="https://www.linkedin.com/in/mohammed-maaz-a-0aa730217/" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="text-[#CC0000] hover:underline font-semibold inline-flex items-center gap-1"
-          >
-            Mohammed Maaz A
-            <Linkedin className="w-3 h-3" />
-          </a>
+          Developed by{' '}
+          <span className="text-[#CC0000] font-semibold">&lt;Mohammed Maaz A&gt;</span>
         </p>
       </footer>
 

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { X, Shield, Database, Lock, Smartphone, CheckCircle } from 'lucide-react';
+import { Shield, Database, Lock, Smartphone, CheckCircle } from 'lucide-react';
 
 export default function TermsModal({ open, onClose, onAccept, showAcceptButton = false }) {
   const [canAccept, setCanAccept] = useState(false);
@@ -31,20 +31,12 @@ export default function TermsModal({ open, onClose, onAccept, showAcceptButton =
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) onClose(); }}>
-      <DialogContent className="sm:max-w-lg bg-white max-h-[90vh] flex flex-col p-0">
+      <DialogContent className="sm:max-w-lg bg-white max-h-[90vh] flex flex-col p-0 [&>button]:hidden">
         <DialogHeader className="p-6 pb-0 flex-shrink-0">
-          <div className="flex items-center justify-between">
-            <DialogTitle className="font-heading text-xl font-bold text-[#0F172A] flex items-center gap-2">
-              <Shield className="w-5 h-5 text-[#CC0000]" />
-              Terms and Conditions
-            </DialogTitle>
-            <button 
-              onClick={onClose}
-              className="p-1.5 rounded-lg hover:bg-[#F0F4FA] text-[#64748B] hover:text-[#0F172A] transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
+          <DialogTitle className="font-heading text-xl font-bold text-[#0F172A] flex items-center gap-2">
+            <Shield className="w-5 h-5 text-[#CC0000]" />
+            Terms and Conditions
+          </DialogTitle>
         </DialogHeader>
 
         <div 
@@ -149,8 +141,8 @@ export default function TermsModal({ open, onClose, onAccept, showAcceptButton =
           </div>
         </div>
 
-        {showAcceptButton && (
-          <div className="p-6 pt-4 border-t border-[#E2E8F0] flex-shrink-0">
+        <div className="p-6 pt-4 border-t border-[#E2E8F0] flex-shrink-0">
+          {showAcceptButton ? (
             <Button
               onClick={handleAccept}
               disabled={!canAccept}
@@ -162,19 +154,15 @@ export default function TermsModal({ open, onClose, onAccept, showAcceptButton =
             >
               {canAccept ? 'I Accept the Terms and Conditions' : 'Please scroll to the bottom to accept'}
             </Button>
-          </div>
-        )}
-
-        {!showAcceptButton && (
-          <div className="p-6 pt-4 border-t border-[#E2E8F0] flex-shrink-0">
+          ) : (
             <Button
               onClick={onClose}
               className="w-full bg-[#F0F4FA] hover:bg-[#E2E8F0] text-[#0F172A] rounded-full py-3 h-12 font-semibold"
             >
               Close
             </Button>
-          </div>
-        )}
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );
