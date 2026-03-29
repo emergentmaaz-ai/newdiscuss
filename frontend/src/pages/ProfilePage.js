@@ -18,7 +18,13 @@ export default function ProfilePage() {
     }
   }, [user]);
 
-  const handleLogout = async () => { setLoggingOut(true); await logout(); navigate('/'); };
+  const handleLogout = async () => { 
+    setLoggingOut(true); 
+    await logout(); 
+    // Clear history and redirect to landing page
+    window.history.replaceState(null, '', '/');
+    navigate('/', { replace: true }); 
+  };
 
   const initials = (user?.username || 'U').slice(0, 2).toUpperCase();
 
