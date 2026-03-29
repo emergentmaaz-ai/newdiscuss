@@ -51,8 +51,8 @@ export default function CommentsSection({ postId, currentUser }) {
     if (!newComment.trim()) return;
     setSubmitting(true);
     try {
-      const comment = await createComment(postId, newComment.trim(), currentUser);
-      setComments((prev) => [...prev, comment]);
+      await createComment(postId, newComment.trim(), currentUser);
+      // Don't add to state - real-time listener will pick it up
       setNewComment('');
     } catch (err) {
       toast.error(err.message || 'Failed to add comment');

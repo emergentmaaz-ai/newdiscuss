@@ -262,43 +262,19 @@ export const toggleVote = async (postId, voteType, userId) => {
   const voteRef = ref(database, `votes/${postId}/${userId}`);
   const allVotesRef = ref(database, `votes/${postId}`);
   
-  // Get current vote
+  // Get current user's vote
   const currentVoteSnap = await get(voteRef);
   const currentVote = currentVoteSnap.exists() ? currentVoteSnap.val() : null;
   
-  // Get all votes to calculate score
-  const allVotesSnap = await get(allVotesRef);
-  const allVotes = allVotesSnap.exists() ? allVotesSnap.val() : {};
-  
-  let upvotes = Object.values(allVotes).filter(v => v === 'up').length;
-  let downvotes = Object.values(allVotes).filter(v => v === 'down').length;
-  
   if (currentVote === voteType) {
-    // Toggle off
+    // Same vote clicked again - toggle it off (unlike/un-dislike)
     await remove(voteRef);
-    if (voteType === 'up') upvotes--;
-    else downvotes--;
   } else {
-    // Check if downvote would make score negative
-    if (voteType === 'down') {
-      let newUp = currentVote === 'up' ? upvotes - 1 : upvotes;
-      let newDown = downvotes + 1;
-      if ((newUp - newDown) < 0) {
-        throw new Error('Vote score cannot go below 0');
-      }
-    }
-    
-    // Set new vote
+    // Set new vote (or switch from like to dislike / dislike to like)
     await set(voteRef, voteType);
-    
-    if (currentVote === 'up') upvotes--;
-    else if (currentVote === 'down') downvotes--;
-    
-    if (voteType === 'up') upvotes++;
-    else downvotes++;
   }
   
-  // Get updated votes
+  // Get updated vote counts
   const updatedVotesSnap = await get(allVotesRef);
   const updatedVotes = updatedVotesSnap.exists() ? updatedVotesSnap.val() : {};
   

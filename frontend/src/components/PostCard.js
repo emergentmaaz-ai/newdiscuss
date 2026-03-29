@@ -9,7 +9,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { ChevronUp, ChevronDown, MessageSquare, Share2, Pencil, Trash2, Github, ExternalLink, X, Check, Loader2, Hash } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, MessageSquare, Share2, Pencil, Trash2, Github, ExternalLink, X, Check, Loader2, Hash } from 'lucide-react';
 import { toast } from 'sonner';
 
 function timeAgo(iso) {
@@ -44,6 +44,8 @@ export default function PostCard({ post, currentUser, onDeleted, onUpdated, onVo
   const isProject = post.type === 'project';
   const hashtags = post.hashtags || [];
   const userVote = (post.votes || {})[currentUser?.id] || null;
+  const upvoteCount = post.upvote_count || 0;
+  const downvoteCount = post.downvote_count || 0;
 
   const handleVote = async (voteType) => {
     if (voting) return;
@@ -92,7 +94,7 @@ export default function PostCard({ post, currentUser, onDeleted, onUpdated, onVo
 
   return (
     <div data-testid={`post-card-${post.id}`} className="bg-white border border-[#E2E8F0] rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] transition-all duration-200 overflow-hidden">
-      {/* Content area - full width now, no side vote column */}
+      {/* Content area */}
       <div className="p-4 md:p-5">
         {/* Header */}
         <div className="flex items-start justify-between gap-3 mb-2">
@@ -177,36 +179,53 @@ export default function PostCard({ post, currentUser, onDeleted, onUpdated, onVo
         )}
       </div>
 
-      {/* Actions bar — votes + comments + share all in one row */}
+      {/* Actions bar — separate like/dislike buttons */}
       {!editing && (
-        <div className="flex items-center gap-1 px-3 py-2 border-t border-[#E2E8F0]">
-          {/* Vote buttons */}
-          <button data-testid={`post-upvote-btn-${post.id}`} onClick={() => handleVote('up')} disabled={voting}
-            className={`p-1.5 rounded-lg transition-all ${userVote === 'up' ? 'text-[#CC0000] bg-[#CC0000]/10' : 'text-[#94A3B8] hover:text-[#CC0000] hover:bg-[#CC0000]/5'}`}>
-            <ChevronUp className="w-4 h-4" strokeWidth={userVote === 'up' ? 3 : 2} />
+        <div className="flex items-center gap-2 px-3 py-2 border-t border-[#E2E8F0]">
+          {/* Like button */}
+          <button 
+            data-testid={`post-upvote-btn-${post.id}`} 
+            onClick={() => handleVote('up')} 
+            disabled={voting}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[13px] font-medium transition-all ${
+              userVote === 'up' 
+                ? 'bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/30' 
+                : 'text-[#64748B] hover:bg-[#10B981]/5 hover:text-[#10B981] border border-transparent'
+            }`}
+          >
+            <ThumbsUp className="w-4 h-4" fill={userVote === 'up' ? 'currentColor' : 'none'} />
+            <span data-testid={`post-upvote-count-${post.id}`}>{upvoteCount}</span>
           </button>
-          <span data-testid={`post-vote-count-${post.id}`} className={`text-[13px] font-bold min-w-[16px] text-center ${userVote === 'up' ? 'text-[#CC0000]' : userVote === 'down' ? 'text-[#3B82F6]' : 'text-[#0F172A]'}`}>
-            {(post.upvote_count || 0) - (post.downvote_count || 0)}
-          </span>
-          <button data-testid={`post-downvote-btn-${post.id}`} onClick={() => handleVote('down')} disabled={voting}
-            className={`p-1.5 rounded-lg transition-all ${userVote === 'down' ? 'text-[#3B82F6] bg-[#3B82F6]/10' : 'text-[#94A3B8] hover:text-[#3B82F6] hover:bg-[#3B82F6]/5'}`}>
-            <ChevronDown className="w-4 h-4" strokeWidth={userVote === 'down' ? 3 : 2} />
+
+          {/* Dislike button */}
+          <button 
+            data-testid={`post-downvote-btn-${post.id}`} 
+            onClick={() => handleVote('down')} 
+            disabled={voting}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[13px] font-medium transition-all ${
+              userVote === 'down' 
+                ? 'bg-[#EF4444]/10 text-[#EF4444] border border-[#EF4444]/30' 
+                : 'text-[#64748B] hover:bg-[#EF4444]/5 hover:text-[#EF4444] border border-transparent'
+            }`}
+          >
+            <ThumbsDown className="w-4 h-4" fill={userVote === 'down' ? 'currentColor' : 'none'} />
+            <span data-testid={`post-downvote-count-${post.id}`}>{downvoteCount}</span>
           </button>
 
           <div className="w-px h-4 bg-[#E2E8F0] mx-1" />
 
           {/* Comments */}
           <button data-testid={`post-comments-btn-${post.id}`} onClick={() => setShowComments(!showComments)}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[13px] font-medium text-[#94A3B8] hover:bg-[#F0F4FA] hover:text-[#0F172A] transition-colors">
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[13px] font-medium text-[#64748B] hover:bg-[#F0F4FA] hover:text-[#0F172A] transition-colors">
             <MessageSquare className="w-4 h-4" />
             <span data-testid={`post-comment-count-${post.id}`}>{post.comment_count || 0}</span>
           </button>
 
           {/* Share */}
           <button data-testid={`post-share-btn-${post.id}`} onClick={() => setShowShare(true)}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[13px] font-medium text-[#94A3B8] hover:bg-[#F0F4FA] hover:text-[#0F172A] transition-colors">
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[13px] font-medium text-[#64748B] hover:bg-[#F0F4FA] hover:text-[#0F172A] transition-colors">
             <Share2 className="w-4 h-4" />
-            <span>Share</span>
+            <span className="hidden sm:inline">Share</span>
           </button>
         </div>
       )}
