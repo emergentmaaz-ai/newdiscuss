@@ -8,17 +8,22 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut as firebaseSignOut,
-  onAuthStateChanged
+  onAuthStateChanged,
+  sendSignInLinkToEmail,
+  isSignInWithEmailLink,
+  signInWithEmailLink
 } from '@/lib/firebase';
 import { createUser, getUser, getUserByEmail, checkUsernameAvailable, updateUser } from '@/lib/db';
 
 const AuthContext = createContext(null);
 
+const EMAIL_LINK_REDIRECT_URL = 'https://dsscus.netlify.app/';
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [pendingVerification, setPendingVerification] = useState(false);
 
-  // Sync Firebase Auth user with our database user
   const syncUser = useCallback(async (firebaseUser) => {
     if (!firebaseUser) {
       setUser(null);
@@ -26,17 +31,14 @@ export function AuthProvider({ children }) {
     }
 
     try {
-      // Check if user exists in database
       let dbUser = await getUser(firebaseUser.uid);
       
       if (!dbUser) {
-        // User doesn't exist, create them (for Google auth)
         const email = firebaseUser.email?.toLowerCase();
         let username = firebaseUser.displayName?.replace(/[^a-zA-Z0-9_]/g, '').toLowerCase().slice(0, 15) 
           || email?.split('@')[0].replace(/[^a-zA-Z0-9_]/g, '').slice(0, 15) 
           || 'user';
         
-        // Ensure unique username
         let isAvailable = await checkUsernameAvailable(username);
         let counter = 1;
         while (!isAvailable) {
@@ -52,7 +54,6 @@ export function AuthProvider({ children }) {
           auth_provider: firebaseUser.providerData[0]?.providerId || 'email'
         });
       } else if (firebaseUser.photoURL && firebaseUser.photoURL !== dbUser.photo_url) {
-        // Update photo if changed
         await updateUser(firebaseUser.uid, { photo_url: firebaseUser.photoURL });
         dbUser.photo_url = firebaseUser.photoURL;
       }
@@ -70,7 +71,6 @@ export function AuthProvider({ children }) {
       return userData;
     } catch (error) {
       console.error('Error syncing user:', error);
-      // Still set basic user info
       const basicUser = {
         id: firebaseUser.uid,
         uid: firebaseUser.uid,
@@ -83,16 +83,65 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
+  // Handle email link sign-in on page load
   useEffect(() => {
-    // Check for redirect result first (for mobile Google auth)
+    if (isSignInWithEmailLink(auth, window.location.href)) {
+      let email = window.localStorage.getItem('emailForSignIn');
+      if (!email) {
+        email = window.prompt('Please provide your email for confirmation');
+      }
+      if (email) {
+        signInWithEmailLink(auth, email, window.location.href)
+          .then(async (result) => {
+            window.localStorage.removeItem('emailForSignIn');
+            window.localStorage.removeItem('pendingVerification');
+            window.localStorage.removeItem('pendingUsername');
+            
+            // Check if we have stored username for this new user
+            const storedUsername = window.localStorage.getItem('verifyUsername_' + email.toLowerCase());
+            if (storedUsername) {
+              // Create or update user in database with stored username
+              let dbUser = await getUser(result.user.uid);
+              if (!dbUser) {
+                await createUser(result.user.uid, {
+                  username: storedUsername,
+                  email: email.toLowerCase(),
+                  photo_url: '',
+                  auth_provider: 'email'
+                });
+              }
+              window.localStorage.removeItem('verifyUsername_' + email.toLowerCase());
+            }
+            
+            await syncUser(result.user);
+            setPendingVerification(false);
+          })
+          .catch((error) => {
+            console.error('Email link sign-in error:', error);
+          });
+      }
+    }
+  }, [syncUser]);
+
+  useEffect(() => {
     getRedirectResult(auth).then(async (result) => {
       if (result?.user) {
         await syncUser(result.user);
       }
     }).catch(console.error);
 
-    // Listen for auth state changes
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      // If there's a pending verification, don't auto-login
+      const isPending = window.localStorage.getItem('pendingVerification');
+      if (isPending && firebaseUser && firebaseUser.providerData[0]?.providerId === 'password') {
+        // Sign out unverified manual accounts
+        await firebaseSignOut(auth);
+        setUser(null);
+        setPendingVerification(true);
+        setLoading(false);
+        return;
+      }
+      
       await syncUser(firebaseUser);
       setLoading(false);
     });
@@ -102,7 +151,6 @@ export function AuthProvider({ children }) {
 
   const register = async (username, email, password) => {
     try {
-      // Validate
       if (!username || username.length < 2) {
         return { success: false, error: 'Username must be at least 2 characters' };
       }
@@ -116,13 +164,11 @@ export function AuthProvider({ children }) {
         return { success: false, error: 'Password must be at least 6 characters' };
       }
 
-      // Check username availability
       const isAvailable = await checkUsernameAvailable(username);
       if (!isAvailable) {
         return { success: false, error: `Username "${username}" is already taken` };
       }
 
-      // Check if email exists
       const existingUser = await getUserByEmail(email);
       if (existingUser) {
         return { success: false, error: 'This email is already registered' };
@@ -139,8 +185,27 @@ export function AuthProvider({ children }) {
         auth_provider: 'email'
       });
 
-      await syncUser(credential.user);
-      return { success: true };
+      // Store username for email verification completion
+      window.localStorage.setItem('verifyUsername_' + email.toLowerCase().trim(), username.trim());
+
+      // Send verification email link
+      const actionCodeSettings = {
+        url: EMAIL_LINK_REDIRECT_URL,
+        handleCodeInApp: true,
+      };
+
+      await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+      
+      // Save email for verification completion
+      window.localStorage.setItem('emailForSignIn', email);
+      window.localStorage.setItem('pendingVerification', 'true');
+      
+      // Sign out until verified
+      await firebaseSignOut(auth);
+      setUser(null);
+      setPendingVerification(true);
+
+      return { success: true, needsVerification: true };
     } catch (error) {
       console.error('Registration error:', error);
       if (error.code === 'auth/email-already-in-use') {
@@ -155,15 +220,15 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     try {
-      if (!email) {
-        return { success: false, error: 'Email is required' };
-      }
-      if (!password) {
-        return { success: false, error: 'Password is required' };
-      }
+      if (!email) return { success: false, error: 'Email is required' };
+      if (!password) return { success: false, error: 'Password is required' };
 
+      // Clear any pending verification state for this login
+      window.localStorage.removeItem('pendingVerification');
+      
       const credential = await signInWithEmailAndPassword(auth, email, password);
       await syncUser(credential.user);
+      setPendingVerification(false);
       return { success: true };
     } catch (error) {
       console.error('Login error:', error);
@@ -184,6 +249,10 @@ export function AuthProvider({ children }) {
     try {
       googleProvider.setCustomParameters({ prompt: 'select_account' });
       
+      // Clear any pending verification
+      window.localStorage.removeItem('pendingVerification');
+      setPendingVerification(false);
+      
       try {
         const result = await signInWithPopup(auth, googleProvider);
         await syncUser(result.user);
@@ -198,7 +267,6 @@ export function AuthProvider({ children }) {
               error: `Please add "${window.location.hostname}" to Firebase Console > Authentication > Settings > Authorized domains` 
             };
           }
-          // Fallback to redirect
           await signInWithRedirect(auth, googleProvider);
           return { success: false, error: '' };
         }
@@ -218,8 +286,26 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const resendVerificationEmail = async (email) => {
+    try {
+      const actionCodeSettings = {
+        url: EMAIL_LINK_REDIRECT_URL,
+        handleCodeInApp: true,
+      };
+      await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+      window.localStorage.setItem('emailForSignIn', email);
+      return { success: true };
+    } catch (error) {
+      console.error('Resend verification error:', error);
+      return { success: false, error: error.message || 'Failed to resend verification email' };
+    }
+  };
+
   const logout = async () => {
     try {
+      window.localStorage.removeItem('pendingVerification');
+      window.localStorage.removeItem('emailForSignIn');
+      setPendingVerification(false);
       await firebaseSignOut(auth);
       setUser(null);
     } catch (error) {
@@ -228,7 +314,10 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, loginWithGoogle, logout }}>
+    <AuthContext.Provider value={{ 
+      user, loading, pendingVerification, 
+      login, register, loginWithGoogle, logout, resendVerificationEmail 
+    }}>
       {children}
     </AuthContext.Provider>
   );

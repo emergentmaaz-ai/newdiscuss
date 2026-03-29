@@ -1,6 +1,19 @@
 import { initializeApp, getApps } from 'firebase/app';
 import { getDatabase, ref, get, set, push, update, remove, onValue, off, query, orderByChild } from 'firebase/database';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
+import { 
+  getAuth, 
+  GoogleAuthProvider, 
+  signInWithPopup, 
+  signInWithRedirect, 
+  getRedirectResult, 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
+  signOut, 
+  onAuthStateChanged,
+  sendSignInLinkToEmail,
+  isSignInWithEmailLink,
+  signInWithEmailLink
+} from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: "AIzaSyAHjarX3OLHRw7kqvFh_8GsTnqsyl9vg9c",
@@ -39,7 +52,10 @@ export {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
-  onAuthStateChanged
+  onAuthStateChanged,
+  sendSignInLinkToEmail,
+  isSignInWithEmailLink,
+  signInWithEmailLink
 };
 
 export default app;

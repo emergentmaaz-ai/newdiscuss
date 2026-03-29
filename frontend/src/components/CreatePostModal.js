@@ -68,9 +68,9 @@ export default function CreatePostModal({ open, onClose, onCreated }) {
 
           <div className="grid grid-cols-2 gap-3">
             <button type="button" data-testid="create-post-type-discussion" onClick={() => setPostType('discussion')}
-              className={`flex items-center gap-2 p-3 rounded-xl border-2 transition-all ${postType === 'discussion' ? 'border-[#CC0000] bg-[#CC0000]/5' : 'border-[#E2E8F0] dark:border-[#334155] hover:border-[#CC0000]/30'}`}>
-              <MessageSquare className={`w-5 h-5 ${postType === 'discussion' ? 'text-[#CC0000]' : 'text-[#64748B] dark:text-[#94A3B8]'}`} />
-              <span className={`text-[13px] md:text-[15px] font-medium ${postType === 'discussion' ? 'text-[#CC0000]' : 'text-[#64748B] dark:text-[#94A3B8]'}`}>Discussion</span>
+              className={`flex items-center gap-2 p-3 rounded-xl border-2 transition-all ${postType === 'discussion' ? 'border-[#2563EB] bg-[#2563EB]/5' : 'border-[#E2E8F0] dark:border-[#334155] hover:border-[#2563EB]/30'}`}>
+              <MessageSquare className={`w-5 h-5 ${postType === 'discussion' ? 'text-[#2563EB]' : 'text-[#6275AF] dark:text-[#94A3B8]'}`} />
+              <span className={`text-[13px] md:text-[15px] font-medium ${postType === 'discussion' ? 'text-[#2563EB]' : 'text-[#6275AF] dark:text-[#94A3B8]'}`}>Discussion</span>
             </button>
             <button type="button" data-testid="create-post-type-project" onClick={() => setPostType('project')}
               className={`flex items-center gap-2 p-3 rounded-xl border-2 transition-all ${postType === 'project' ? 'border-[#3B82F6] bg-[#3B82F6]/5' : 'border-[#E2E8F0] dark:border-[#334155] hover:border-[#3B82F6]/30'}`}>
@@ -106,7 +106,7 @@ export default function CreatePostModal({ open, onClose, onCreated }) {
                   {hashtags.map((tag) => (
                     <span key={tag} className="inline-flex items-center gap-1 bg-[#3B82F6]/10 text-[#3B82F6] border border-[#3B82F6]/20 rounded-full px-2.5 py-0.5 text-xs font-medium">
                       <Hash className="w-3 h-3" />{tag}
-                      <button type="button" onClick={() => setHashtags(hashtags.filter(t => t !== tag))} className="ml-0.5 hover:text-[#CC0000]"><X className="w-3 h-3" /></button>
+                      <button type="button" onClick={() => setHashtags(hashtags.filter(t => t !== tag))} className="ml-0.5 hover:text-[#EF4444]"><X className="w-3 h-3" /></button>
                     </span>
                   ))}
                 </div>
@@ -137,7 +137,7 @@ export default function CreatePostModal({ open, onClose, onCreated }) {
           )}
 
           <Button type="submit" data-testid="create-post-submit" disabled={loading}
-            className="w-full bg-[#CC0000] text-white hover:bg-[#A30000] rounded-md py-2.5 font-medium shadow-sm">
+            className="w-full bg-[#2563EB] text-white hover:bg-[#1D4ED8] rounded-md py-2.5 font-medium shadow-sm">
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Publish Post'}
           </Button>
         </form>

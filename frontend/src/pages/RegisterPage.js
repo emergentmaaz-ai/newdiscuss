@@ -30,10 +30,13 @@ export default function RegisterPage() {
   const [signupEnabled, setSignupEnabled] = useState(true);
   const [settingsLoading, setSettingsLoading] = useState(true);
   const [pageLoading, setPageLoading] = useState(true);
+  const [verificationSent, setVerificationSent] = useState(false);
+  const [verificationEmail, setVerificationEmail] = useState('');
+  const [resending, setResending] = useState(false);
   
   const usernameTimeout = useRef(null);
   const emailTimeout = useRef(null);
-  const { register, loginWithGoogle } = useAuth();
+  const { register, loginWithGoogle, resendVerificationEmail } = useAuth();
   const navigate = useNavigate();
 
   // Page loading effect
@@ -103,8 +106,21 @@ export default function RegisterPage() {
     setLoading(true);
     const r = await register(username.trim(), email.trim(), password);
     setLoading(false);
-    if (r.success) navigate('/feed');
-    else setError(r.error);
+    if (r.success && r.needsVerification) {
+      setVerificationSent(true);
+      setVerificationEmail(email.trim());
+    } else if (r.success) {
+      navigate('/feed');
+    } else {
+      setError(r.error);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    setResending(true);
+    const r = await resendVerificationEmail(verificationEmail);
+    setResending(false);
+    if (!r.success) setError(r.error);
   };
 
   const handleGoogle = async () => {
@@ -163,7 +179,42 @@ export default function RegisterPage() {
           </div>
 
           <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:shadow-none p-6 md:p-8">
-            {!signupEnabled ? (
+            {verificationSent ? (
+              <div data-testid="verification-sent-message" className="text-center py-4">
+                <div className="w-16 h-16 bg-[#2563EB]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Shield className="w-8 h-8 text-[#2563EB]" />
+                </div>
+                <h3 className="text-[#0F172A] dark:text-[#F1F5F9] font-bold text-lg mb-2">Verify Your Email</h3>
+                <p className="text-[#6275AF] dark:text-[#94A3B8] text-[14px] leading-relaxed mb-1">
+                  We've sent a verification link to:
+                </p>
+                <p className="text-[#2563EB] font-semibold text-[15px] mb-4">{verificationEmail}</p>
+                <div className="bg-[#F5F5F7] dark:bg-[#0F172A] rounded-xl p-4 text-left space-y-2 mb-5 border border-[#E2E8F0] dark:border-[#334155]">
+                  <p className="text-[#0F172A] dark:text-[#F1F5F9] text-[13px] font-medium">Next steps:</p>
+                  <ol className="text-[#6275AF] dark:text-[#94A3B8] text-[13px] space-y-1.5 list-decimal list-inside">
+                    <li>Open the email from Discuss</li>
+                    <li>Click the verification link</li>
+                    <li>You'll be redirected and signed in automatically</li>
+                  </ol>
+                </div>
+                {error && (
+                  <div className="bg-[#EF4444]/8 border border-[#EF4444]/15 rounded-xl p-3 text-[#EF4444] text-[13px] mb-4 flex items-start gap-2">
+                    <XCircle className="w-4 h-4 shrink-0 mt-0.5" /><span>{error}</span>
+                  </div>
+                )}
+                <Button
+                  data-testid="resend-verification-btn"
+                  onClick={handleResendVerification}
+                  disabled={resending}
+                  className="w-full bg-[#F5F5F7] dark:bg-[#334155] hover:bg-[#E2E8F0] dark:hover:bg-[#475569] text-[#0F172A] dark:text-[#F1F5F9] font-medium rounded-full py-2.5 h-11 mb-3"
+                >
+                  {resending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Resend Verification Email'}
+                </Button>
+                <Link to="/login" className="text-[#2563EB] hover:underline font-semibold text-[13px]">
+                  Back to Login
+                </Link>
+              </div>
+            ) : !signupEnabled ? (
               <div data-testid="signup-disabled-message" className="text-center py-8">
                 <div className="w-16 h-16 bg-[#F59E0B]/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <AlertCircle className="w-8 h-8 text-[#F59E0B]" />
@@ -277,14 +328,14 @@ export default function RegisterPage() {
 
                   <Button type="submit" data-testid="register-submit-btn"
                     disabled={loading || usernameStatus?.type === 'taken' || emailStatus?.type === 'taken' || !termsAccepted}
-                    className="w-full bg-[#CC0000] hover:bg-[#A30000] text-white font-semibold rounded-full py-3 h-12 text-[15px] shadow-lg shadow-[#CC0000]/20 mt-1 disabled:opacity-50 disabled:cursor-not-allowed">
+                    className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold rounded-full py-3 h-12 text-[15px] shadow-lg shadow-[#2563EB]/20 mt-1 disabled:opacity-50 disabled:cursor-not-allowed">
                     {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Create Account'}
                   </Button>
                 </form>
 
                 <p className="text-center text-[#6275AF] dark:text-[#94A3B8] text-[13px] mt-5">
                   Already have an account?{' '}
-                  <Link to="/login" data-testid="register-to-login-link" className="text-[#CC0000] hover:underline font-semibold">
+                  <Link to="/login" data-testid="register-to-login-link" className="text-[#2563EB] hover:underline font-semibold">
                     Login
                   </Link>
                 </p>
@@ -303,7 +354,7 @@ export default function RegisterPage() {
       <footer className="py-4 text-center">
         <p className="text-[#94A3B8] text-[12px]">
           Developed by{' '}
-          <span className="text-[#CC0000] font-semibold">&lt;Mohammed Maaz A&gt;</span>
+          <span className="text-[#BC4800] font-semibold">&lt;Mohammed Maaz A&gt;</span>
         </p>
       </footer>
 
