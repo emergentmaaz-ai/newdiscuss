@@ -13,6 +13,7 @@ import {
   isSignInWithEmailLink,
   signInWithEmailLink
 } from '@/lib/firebase';
+import { database, ref, onValue, off } from '@/lib/firebase';
 import { createUser, getUser, getUserByEmail, checkUsernameAvailable, updateUser } from '@/lib/db';
 
 const AuthContext = createContext(null);
@@ -152,6 +153,29 @@ export function AuthProvider({ children }) {
 
     return unsubscribe;
   }, [syncUser]);
+
+  // Real-time listener for user verification status changes
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const userRef = ref(database, `users/${user.id}`);
+    
+    const handleUserUpdate = (snapshot) => {
+      if (snapshot.exists()) {
+        const userData = snapshot.val();
+        // Update user state with new verified status and admin_message
+        setUser(prev => ({
+          ...prev,
+          verified: userData.verified || false,
+          admin_message: userData.admin_message || ''
+        }));
+      }
+    };
+
+    onValue(userRef, handleUserUpdate);
+
+    return () => off(userRef, 'value', handleUserUpdate);
+  }, [user?.id]);
 
   const register = async (username, email, password) => {
     try {

@@ -87,7 +87,8 @@ export default function CommentsSection({ postId, postAuthorId, currentUser }) {
         ) : (
           comments.map((c) => {
             const isPostAuthor = c.author_id === postAuthorId;
-            const isClickable = !isPostAuthor; // Only clickable if NOT the post author
+            const isCurrentUser = c.author_id === currentUser?.id; // Check if current user
+            const isClickable = !isCurrentUser; // Only clickable if NOT current user
             
             return (
               <div 
