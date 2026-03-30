@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { subscribeToAdminMessage } from '@/lib/db';
-import { MessageCircle, X } from 'lucide-react';
+import { X } from 'lucide-react';
 
 export default function AdminMessageBanner() {
   const [message, setMessage] = useState(null);
@@ -24,8 +24,9 @@ export default function AdminMessageBanner() {
       className="bg-[#EFF6FF] dark:bg-[#1E293B] border-b border-[#3B82F6]/20 dark:border-[#334155]"
     >
       <div className="max-w-5xl mx-auto px-4 py-3 flex items-center gap-3">
-        <div className="w-8 h-8 bg-[#3B82F6] rounded-lg flex items-center justify-center shrink-0">
-          <MessageCircle className="w-4 h-4 text-white" />
+        <div className="flex items-center shrink-0">
+          <span className="text-[#3B82F6] text-2xl font-bold">&lt;</span>
+          <span className="text-[#EF4444] text-2xl font-bold">&gt;</span>
         </div>
         <p className="flex-1 text-[13px] md:text-[14px]">
           <span className="text-[#0F172A] dark:text-[#F1F5F9] font-medium">Message from </span>

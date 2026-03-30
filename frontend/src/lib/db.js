@@ -100,9 +100,10 @@ export const createUser = async (userId, userData) => {
   await set(userRef, {
     ...userData,
     verified: false, // Default verified status
+    admin_message: '', // Default admin message (empty means no message)
     created_at: new Date().toISOString()
   });
-  return { id: userId, ...userData, verified: false };
+  return { id: userId, ...userData, verified: false, admin_message: '' };
 };
 
 export const getUser = async (userId) => {
@@ -113,7 +114,8 @@ export const getUser = async (userId) => {
     return { 
       id: userId, 
       ...userData,
-      verified: userData.verified || false // Ensure verified field exists
+      verified: userData.verified || false, // Ensure verified field exists
+      admin_message: userData.admin_message || '' // Ensure admin_message field exists
     };
   }
   return null;

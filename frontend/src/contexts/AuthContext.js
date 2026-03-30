@@ -65,6 +65,7 @@ export function AuthProvider({ children }) {
         username: dbUser.username,
         photo_url: dbUser.photo_url || firebaseUser.photoURL || '',
         verified: dbUser.verified || false, // Include verified status
+        admin_message: dbUser.admin_message || '', // Include admin message
         created_at: dbUser.created_at
       };
       
@@ -78,7 +79,8 @@ export function AuthProvider({ children }) {
         email: firebaseUser.email,
         username: firebaseUser.displayName || firebaseUser.email?.split('@')[0],
         photo_url: firebaseUser.photoURL || '',
-        verified: false // Default to false on error
+        verified: false, // Default to false on error
+        admin_message: '' // Default to empty on error
       };
       setUser(basicUser);
       return basicUser;

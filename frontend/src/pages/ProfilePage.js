@@ -7,6 +7,7 @@ import PostCard from '@/components/PostCard';
 import ThemeSelector from '@/components/ThemeSelector';
 import VerifiedBadge from '@/components/VerifiedBadge';
 import VerificationRequestModal from '@/components/VerificationRequestModal';
+import UserAdminMessage from '@/components/UserAdminMessage';
 import { Button } from '@/components/ui/button';
 import { FileText, LogOut, Loader2, AlertTriangle, ChevronDown, ChevronUp, Calendar, Filter, ShieldCheck } from 'lucide-react';
 
@@ -113,6 +114,13 @@ export default function ProfilePage() {
               <ShieldCheck className="w-4 h-4 mr-2" />
               Request Verification
             </Button>
+          )}
+
+          {/* User Admin Message - Above Theme Selector */}
+          {user?.admin_message && (
+            <div className="mt-6">
+              <UserAdminMessage message={user.admin_message} />
+            </div>
           )}
 
           <div className="mt-6 pt-5 border-t border-[#E2E8F0] dark:border-[#334155] discuss:border-[#333333]">
