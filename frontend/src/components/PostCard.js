@@ -98,7 +98,7 @@ export default function PostCard({ post, currentUser, onDeleted, onUpdated, onVo
   };
 
   return (
-    <div data-testid={`post-card-${post.id}`} className="bg-white dark:bg-[#1E293B] discuss:bg-[#1a1a1a] border border-[#E2E8F0] dark:border-[#334155] discuss:border-[#333333] shadow-[0_2px_12px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_4px_20px_rgba(0,0,0,0.2)] transition-all duration-200 overflow-hidden">
+    <div data-testid={`post-card-${post.id}`} className="bg-white dark:bg-[#1E293B] discuss:bg-[#1a1a1a] border border-[#E2E8F0] dark:border-[#334155] discuss:border-[#333333] shadow-[0_2px_12px_rgba(0,0,0,0.04)] dark:shadow-none discuss:shadow-none hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_4px_20px_rgba(0,0,0,0.2)] discuss:hover:shadow-none transition-all duration-200 overflow-hidden">
       {/* Content area */}
       <div className="p-4 md:p-5">
         {/* Header */}
@@ -114,7 +114,7 @@ export default function PostCard({ post, currentUser, onDeleted, onUpdated, onVo
             <button
               data-testid={`post-author-${post.id}`}
               onClick={handleUsernameClick}
-              className="font-semibold text-[#2563EB] discuss:text-[#F5F5F5] hover:underline text-[13px] md:text-[15px] cursor-pointer"
+              className="font-semibold text-[#2563EB] discuss:text-[#F5F5F5] discuss:hover:text-[#EF4444] hover:underline text-[13px] md:text-[15px] cursor-pointer transition-colors"
             >
               {post.author_username}
             </button>
@@ -151,7 +151,7 @@ export default function PostCard({ post, currentUser, onDeleted, onUpdated, onVo
             <div className="flex flex-wrap gap-1.5 mt-3" onClick={(e) => e.stopPropagation()}>
               {hashtags.map((tag) => (
                 <button key={tag} data-testid={`post-hashtag-${tag}`} onClick={(e) => { e.stopPropagation(); onTagClick?.(tag); }}
-                  className="inline-flex items-center gap-0.5 bg-[#F5F5F7] dark:bg-[#0F172A] discuss:bg-[#262626] hover:bg-[#2563EB]/10 discuss:hover:bg-[#333333] px-2.5 py-1 text-xs font-medium text-[#6275AF] dark:text-[#94A3B8] discuss:text-[#9CA3AF] hover:text-[#2563EB] discuss:hover:text-[#F5F5F5] transition-all">
+                  className="inline-flex items-center gap-0.5 bg-[#F5F5F7] dark:bg-[#0F172A] discuss:bg-[#262626] hover:bg-[#2563EB]/10 discuss:hover:bg-[#333333] px-2.5 py-1 text-xs font-medium text-[#6275AF] dark:text-[#94A3B8] discuss:text-[#9CA3AF] hover:text-[#2563EB] discuss:hover:text-[#F5F5F5] transition-colors">
                   <Hash className="w-3 h-3" />{tag}
                 </button>
               ))}
@@ -168,6 +168,7 @@ export default function PostCard({ post, currentUser, onDeleted, onUpdated, onVo
               )}
               {post.preview_link && (
                 <button onClick={(e) => handleExternalLink(post.preview_link, e)} data-testid={`post-preview-link-${post.id}`}
+                  data-primary="true"
                   className="inline-flex items-center gap-1.5 bg-[#2563EB] discuss:bg-[#EF4444] text-white discuss:text-white px-3 py-1.5 text-xs font-medium hover:bg-[#1D4ED8] discuss:hover:bg-[#DC2626] transition-colors">
                   <ExternalLink className="w-3.5 h-3.5" /> Live Preview
                 </button>

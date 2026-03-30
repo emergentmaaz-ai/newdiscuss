@@ -143,22 +143,22 @@
 }
 
 
-/* Button Shadow Effects for Discuss Theme */
+/* Button Shadow Effects for Discuss Theme - Only on Primary Buttons */
 @layer components {
-  .discuss button:not(:disabled),
-  .discuss a > button:not(:disabled) {
+  .discuss button:not(:disabled):is([type="submit"], [data-primary="true"]),
+  .discuss a > button:not(:disabled):is([type="submit"], [data-primary="true"]) {
     box-shadow: 3px 3px 0 rgba(239, 68, 68, 0.3);
     transition: all 0.15s ease;
   }
   
-  .discuss button:not(:disabled):hover,
-  .discuss a > button:not(:disabled):hover {
+  .discuss button:not(:disabled):is([type="submit"], [data-primary="true"]):hover,
+  .discuss a > button:not(:disabled):is([type="submit"], [data-primary="true"]):hover {
     box-shadow: 5px 5px 0 rgba(239, 68, 68, 0.4);
     transform: translate(-1px, -1px);
   }
   
-  .discuss button:not(:disabled):active,
-  .discuss a > button:not(:disabled):active {
+  .discuss button:not(:disabled):is([type="submit"], [data-primary="true"]):active,
+  .discuss a > button:not(:disabled):is([type="submit"], [data-primary="true"]):active {
     box-shadow: 1px 1px 0 rgba(239, 68, 68, 0.3);
     transform: translate(2px, 2px);
   }

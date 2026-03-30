@@ -79,11 +79,11 @@ export default function ProfilePage() {
       <Header />
       <div className="max-w-xl mx-auto px-4 py-10">
         {/* Profile Card */}
-        <div className="bg-white dark:bg-[#1E293B] discuss:bg-[#1a1a1a] shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:shadow-none discuss:border discuss:border-[#333333] p-8 text-center">
+        <div className="bg-white dark:bg-[#1E293B] discuss:bg-[#1a1a1a] shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:shadow-none discuss:shadow-none border discuss:border discuss:border-[#333333] p-8 text-center">
           {user?.photo_url ? (
-            <img src={user.photo_url} alt={user.username} className="w-24 h-24 mx-auto mb-5 shadow-lg object-cover discuss:border discuss:border-[#333333]" />
+            <img src={user.photo_url} alt={user.username} className="w-24 h-24 mx-auto mb-5 shadow-lg discuss:shadow-none object-cover discuss:border discuss:border-[#333333]" />
           ) : (
-            <div className="w-24 h-24 bg-[#2563EB] discuss:bg-[#EF4444] flex items-center justify-center mx-auto mb-5 shadow-lg shadow-[#2563EB]/20 discuss:shadow-[#EF4444]/20 discuss:border discuss:border-[#333333]">
+            <div className="w-24 h-24 bg-[#2563EB] discuss:bg-[#EF4444] flex items-center justify-center mx-auto mb-5 shadow-lg shadow-[#2563EB]/20 discuss:shadow-none discuss:border discuss:border-[#333333]">
               <span className="text-white discuss:text-white text-2xl font-bold">{initials}</span>
             </div>
           )}
