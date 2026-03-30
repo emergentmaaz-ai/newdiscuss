@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toggleVote, updatePost, deletePost } from '@/lib/db';
 import CommentsSection from '@/components/CommentsSection';
 import ShareModal from '@/components/ShareModal';
 import LinkifiedText from '@/components/LinkifiedText';
 import ExpandableText from '@/components/ExpandableText';
 import ExternalLinkModal from '@/components/ExternalLinkModal';
+import UserPreviewModal from '@/components/UserPreviewModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -31,6 +33,7 @@ function timeAgo(iso) {
 }
 
 export default function PostCard({ post, currentUser, onDeleted, onUpdated, onVoteChanged, onTagClick }) {
+  const navigate = useNavigate();
   const [showComments, setShowComments] = useState(false);
   const [showShare, setShowShare] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -43,6 +46,7 @@ export default function PostCard({ post, currentUser, onDeleted, onUpdated, onVo
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [externalLink, setExternalLink] = useState(null);
+  const [previewUser, setPreviewUser] = useState(null);
 
   const isAuthor = currentUser?.id === post.author_id;
   const isProject = post.type === 'project';
@@ -51,8 +55,21 @@ export default function PostCard({ post, currentUser, onDeleted, onUpdated, onVo
   const upvoteCount = post.upvote_count || 0;
   const downvoteCount = post.downvote_count || 0;
 
+  const handlePostClick = () => {
+    navigate(`/post/${post.id}`);
+  };
+
+  const handleUsernameClick = (e) => {
+    e.stopPropagation();
+    if (post.author_id === currentUser?.id) {
+      navigate('/profile');
+    } else {
+      setPreviewUser(post.author_id);
+    }
+  };
+
   const handleExternalLink = (url, e) => {
-    if (e) e.preventDefault();
+    if (e) { e.preventDefault(); e.stopPropagation(); }
     const isHttp = url.toLowerCase().startsWith('http://') && !url.toLowerCase().startsWith('https://');
     setExternalLink({ url, isHttp });
   };
@@ -111,27 +128,33 @@ export default function PostCard({ post, currentUser, onDeleted, onUpdated, onVo
           <div className="flex items-center gap-2 min-w-0 flex-wrap">
             <span data-testid={`post-badge-${post.id}`}
               className={isProject
-                ? 'bg-[#3B82F6]/10 text-[#2563EB] border border-[#3B82F6]/20 rounded-full px-2.5 py-0.5 text-xs font-semibold shrink-0'
+                ? 'bg-[#BC4800]/10 text-[#BC4800] border border-[#BC4800]/20 rounded-full px-2.5 py-0.5 text-xs font-semibold shrink-0'
                 : 'bg-[#2563EB]/10 text-[#2563EB] dark:text-[#60A5FA] border border-[#2563EB]/20 rounded-full px-2.5 py-0.5 text-xs font-semibold shrink-0'
               }>
               {isProject ? 'Project' : 'Discussion'}
             </span>
-            <span data-testid={`post-author-${post.id}`} className="font-semibold text-[#0F172A] dark:text-[#F1F5F9] text-[13px] md:text-[15px]">{post.author_username}</span>
+            <button
+              data-testid={`post-author-${post.id}`}
+              onClick={handleUsernameClick}
+              className="font-semibold text-[#2563EB] hover:underline text-[13px] md:text-[15px] cursor-pointer"
+            >
+              {post.author_username}
+            </button>
             <span className="text-[#94A3B8] dark:text-[#64748B] text-xs shrink-0">{timeAgo(post.timestamp)}</span>
           </div>
           {isAuthor && !editing && (
             <div className="flex items-center gap-0.5 shrink-0">
-              <button data-testid={`post-edit-btn-${post.id}`} onClick={() => setEditing(true)} className="p-1.5 rounded-lg hover:bg-[#F5F5F7] dark:hover:bg-[#334155] text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white transition-colors">
+              <button data-testid={`post-edit-btn-${post.id}`} onClick={(e) => { e.stopPropagation(); setEditing(true); }} className="p-1.5 rounded-lg hover:bg-[#F5F5F7] dark:hover:bg-[#334155] text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white transition-colors">
                 <Pencil className="w-3.5 h-3.5" />
               </button>
-              <button data-testid={`post-delete-btn-${post.id}`} onClick={() => setShowDeleteConfirm(true)} className="p-1.5 rounded-lg hover:bg-[#EF4444]/10 text-[#94A3B8] hover:text-[#EF4444] transition-colors">
+              <button data-testid={`post-delete-btn-${post.id}`} onClick={(e) => { e.stopPropagation(); setShowDeleteConfirm(true); }} className="p-1.5 rounded-lg hover:bg-[#EF4444]/10 text-[#94A3B8] hover:text-[#EF4444] transition-colors">
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
             </div>
           )}
         </div>
 
-        {/* Body */}
+        {/* Body - clickable to open post detail */}
         {editing ? (
           <div className="space-y-3">
             {isProject && <Input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} placeholder="Project title" className="bg-[#F5F5F7] dark:bg-[#0F172A] border-[#E2E8F0] dark:border-[#334155] dark:text-[#F1F5F9] focus:bg-white dark:focus:bg-[#1E293B] focus:border-[#2563EB] rounded-xl" />}
@@ -152,21 +175,25 @@ export default function PostCard({ post, currentUser, onDeleted, onUpdated, onVo
             </div>
           </div>
         ) : (
-          <>
+          <div
+            data-testid={`post-clickable-${post.id}`}
+            onClick={handlePostClick}
+            className="cursor-pointer"
+          >
             {isProject && post.title && (
-              <h3 data-testid={`post-title-${post.id}`} className="font-bold text-[#0F172A] dark:text-[#F1F5F9] text-[15px] md:text-[17px] mb-1.5 leading-snug">{post.title}</h3>
+              <h3 data-testid={`post-title-${post.id}`} className="font-bold text-[#0F172A] dark:text-[#F1F5F9] text-[15px] md:text-[17px] mb-1.5 leading-snug hover:text-[#2563EB] dark:hover:text-[#60A5FA] transition-colors">{post.title}</h3>
             )}
-            <div data-testid={`post-content-${post.id}`} className="text-[#0F172A] dark:text-[#E2E8F0] text-[13px] md:text-[15px] leading-relaxed">
+            <div data-testid={`post-content-${post.id}`} className="text-[#0F172A] dark:text-[#E2E8F0] text-[13px] md:text-[15px] leading-relaxed" onClick={(e) => e.stopPropagation()}>
               <ExpandableText text={post.content} maxLines={5}>
                 <span className="whitespace-pre-wrap"><LinkifiedText text={post.content} /></span>
               </ExpandableText>
             </div>
 
             {hashtags.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mt-3">
+              <div className="flex flex-wrap gap-1.5 mt-3" onClick={(e) => e.stopPropagation()}>
                 {hashtags.map((tag) => (
-                  <button key={tag} data-testid={`post-hashtag-${tag}`} onClick={() => onTagClick?.(tag)}
-                    className="inline-flex items-center gap-0.5 bg-[#F5F5F7] dark:bg-[#0F172A] hover:bg-[#3B82F6]/10 rounded-full px-2.5 py-1 text-xs font-medium text-[#6275AF] dark:text-[#94A3B8] hover:text-[#2563EB] transition-all">
+                  <button key={tag} data-testid={`post-hashtag-${tag}`} onClick={(e) => { e.stopPropagation(); onTagClick?.(tag); }}
+                    className="inline-flex items-center gap-0.5 bg-[#F5F5F7] dark:bg-[#0F172A] hover:bg-[#2563EB]/10 rounded-full px-2.5 py-1 text-xs font-medium text-[#6275AF] dark:text-[#94A3B8] hover:text-[#2563EB] transition-all">
                     <Hash className="w-3 h-3" />{tag}
                   </button>
                 ))}
@@ -174,7 +201,7 @@ export default function PostCard({ post, currentUser, onDeleted, onUpdated, onVo
             )}
 
             {isProject && (post.github_link || post.preview_link) && (
-              <div className="flex flex-wrap gap-2 mt-3">
+              <div className="flex flex-wrap gap-2 mt-3" onClick={(e) => e.stopPropagation()}>
                 {post.github_link && (
                   <button onClick={(e) => handleExternalLink(post.github_link, e)} data-testid={`post-github-link-${post.id}`}
                     className="inline-flex items-center gap-1.5 bg-[#0F172A] dark:bg-[#F1F5F9] text-white dark:text-[#0F172A] rounded-lg px-3 py-1.5 text-xs font-medium hover:bg-[#1E293B] dark:hover:bg-[#E2E8F0] transition-colors">
@@ -183,13 +210,13 @@ export default function PostCard({ post, currentUser, onDeleted, onUpdated, onVo
                 )}
                 {post.preview_link && (
                   <button onClick={(e) => handleExternalLink(post.preview_link, e)} data-testid={`post-preview-link-${post.id}`}
-                    className="inline-flex items-center gap-1.5 bg-[#3B82F6] text-white rounded-lg px-3 py-1.5 text-xs font-medium hover:bg-[#2563EB] transition-colors">
+                    className="inline-flex items-center gap-1.5 bg-[#2563EB] text-white rounded-lg px-3 py-1.5 text-xs font-medium hover:bg-[#1D4ED8] transition-colors">
                     <ExternalLink className="w-3.5 h-3.5" /> Live Preview
                   </button>
                 )}
               </div>
             )}
-          </>
+          </div>
         )}
       </div>
 
@@ -244,12 +271,11 @@ export default function PostCard({ post, currentUser, onDeleted, onUpdated, onVo
       <ShareModal open={showShare} onClose={() => setShowShare(false)} post={post} />
 
       {externalLink && (
-        <ExternalLinkModal
-          open={true}
-          onClose={() => setExternalLink(null)}
-          url={externalLink.url}
-          isHttp={externalLink.isHttp}
-        />
+        <ExternalLinkModal open={true} onClose={() => setExternalLink(null)} url={externalLink.url} isHttp={externalLink.isHttp} />
+      )}
+
+      {previewUser && (
+        <UserPreviewModal open={true} onClose={() => setPreviewUser(null)} userId={previewUser} />
       )}
 
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>

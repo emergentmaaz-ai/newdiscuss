@@ -194,6 +194,61 @@ export const createPost = async (postData, user) => {
   };
 };
 
+export const getPostById = async (postId) => {
+  const postRef = ref(database, `posts/${postId}`);
+  const votesRef = ref(database, `votes/${postId}`);
+  const commentsRef = ref(database, `comments/${postId}`);
+  
+  const [postSnap, votesSnap, commentsSnap] = await Promise.all([
+    get(postRef), get(votesRef), get(commentsRef)
+  ]);
+  
+  if (!postSnap.exists()) return null;
+  
+  const postVotes = votesSnap.exists() ? votesSnap.val() : {};
+  const postComments = commentsSnap.exists() ? commentsSnap.val() : {};
+  
+  return {
+    id: postId,
+    ...postSnap.val(),
+    upvote_count: Object.values(postVotes).filter(v => v === 'up').length,
+    downvote_count: Object.values(postVotes).filter(v => v === 'down').length,
+    comment_count: Object.keys(postComments).length,
+    votes: postVotes
+  };
+};
+
+export const getPostsByUser = async (userId) => {
+  const postsRef = ref(database, 'posts');
+  const votesRef = ref(database, 'votes');
+  const commentsRef = ref(database, 'comments');
+  
+  const [postsSnap, votesSnap, commentsSnap] = await Promise.all([
+    get(postsRef), get(votesRef), get(commentsRef)
+  ]);
+  
+  const posts = postsSnap.exists() ? postsSnap.val() : {};
+  const votes = votesSnap.exists() ? votesSnap.val() : {};
+  const comments = commentsSnap.exists() ? commentsSnap.val() : {};
+  
+  return Object.entries(posts)
+    .filter(([, p]) => p.author_id === userId)
+    .map(([id, post]) => {
+      const pv = votes[id] || {};
+      const pc = comments[id] || {};
+      return {
+        id, ...post,
+        upvote_count: Object.values(pv).filter(v => v === 'up').length,
+        downvote_count: Object.values(pv).filter(v => v === 'down').length,
+        comment_count: Object.keys(pc).length,
+        votes: pv
+      };
+    })
+    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+};
+
+
+
 export const getPosts = async (searchQuery = null) => {
   const cacheKey = `posts_${searchQuery || 'all'}`;
   
