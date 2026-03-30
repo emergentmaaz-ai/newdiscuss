@@ -55,8 +55,8 @@ module.exports = {
                         }
                 },
                 fontFamily: {
-                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
-                        heading: ['DM Sans', 'Inter', 'sans-serif'],
+                        sans: ['DM Sans', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+                        heading: ['Syne', 'sans-serif'],
                         mono: ['Roboto Mono', 'Courier New', 'monospace']
                 },
                 keyframes: {

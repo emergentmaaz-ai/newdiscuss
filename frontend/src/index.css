@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,57 +6,78 @@
 
 @layer base {
   :root {
-    --background: 0 0% 96%;
-    --foreground: 222 84% 5%;
+    /* New Design System - Light Mode */
+    --background: 220 18% 97%;
+    --foreground: 0 0% 5%;
     --card: 0 0% 100%;
-    --card-foreground: 222 84% 5%;
+    --card-foreground: 0 0% 5%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222 84% 5%;
-    --primary: 217 91% 53%;
+    --popover-foreground: 0 0% 5%;
+    --primary: 216 100% 56%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 224 25% 54%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 210 20% 96%;
-    --muted-foreground: 224 25% 54%;
-    --accent: 210 20% 96%;
-    --accent-foreground: 222 84% 5%;
-    --destructive: 0 84% 60%;
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 0 0% 5%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
+    --accent: 217 100% 97%;
+    --accent-foreground: 216 100% 56%;
+    --destructive: 354 70% 54%;
     --destructive-foreground: 0 0% 100%;
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 217 91% 53%;
-    --chart-1: 24 75% 37%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 216 100% 56%;
+    --radius: 0.75rem;
   }
 
   .dark {
+    /* New Design System - Dark Mode */
     --background: 222 47% 11%;
     --foreground: 210 40% 98%;
     --card: 217 33% 17%;
     --card-foreground: 210 40% 98%;
     --popover: 217 33% 17%;
     --popover-foreground: 210 40% 98%;
-    --primary: 217 91% 53%;
+    --primary: 216 100% 56%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 224 25% 54%;
+    --secondary: 217 33% 25%;
     --secondary-foreground: 210 40% 98%;
-    --muted: 217 33% 17%;
+    --muted: 217 33% 20%;
     --muted-foreground: 215 20% 65%;
-    --accent: 217 33% 17%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 63% 31%;
+    --accent: 217 33% 20%;
+    --accent-foreground: 216 100% 70%;
+    --destructive: 354 70% 54%;
     --destructive-foreground: 210 40% 98%;
     --border: 217 33% 25%;
     --input: 217 33% 25%;
-    --ring: 217 91% 53%;
+    --ring: 216 100% 56%;
   }
 
-  /* Discuss Theme - Tech Dark with Red Accents */
-  .discuss {
+  /* Discuss Light Theme - Tech Mode (unchanged) */
+  .discuss-light {
+    --background: 0 0% 98%;
+    --foreground: 0 0% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 10%;
+    --primary: 0 84% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 90%;
+    --secondary-foreground: 0 0% 10%;
+    --muted: 0 0% 95%;
+    --muted-foreground: 0 0% 40%;
+    --accent: 0 0% 95%;
+    --accent-foreground: 0 0% 10%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 85%;
+    --input: 0 0% 95%;
+    --ring: 0 84% 60%;
+    --radius: 0rem;
+  }
+
+  /* Discuss Dark Theme - Tech Mode (unchanged) */
+  .discuss-dark {
     --background: 0 0% 7%;
     --foreground: 0 0% 95%;
     --card: 0 0% 10%;
@@ -79,11 +100,13 @@
     --radius: 0rem;
   }
 
-  .discuss * {
+  .discuss-light *,
+  .discuss-dark * {
     border-radius: 0 !important;
   }
   
-  .discuss body {
+  .discuss-light body,
+  .discuss-dark body {
     font-family: 'Roboto Mono', 'Courier New', monospace !important;
   }
 }
@@ -92,74 +115,82 @@
   * {
     @apply border-border;
   }
+  
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    font-size: 13px;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-  @media (min-width: 768px) {
-    body {
-      font-size: 15px;
-    }
-  }
   
-  .discuss body {
+  .discuss-light body,
+  .discuss-dark body {
     font-family: 'Roboto Mono', 'Courier New', monospace;
   }
-}
 
-@layer base {
-  [data-debug-wrapper="true"] {
-    display: contents !important;
+  /* Typography */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
   }
 
-  [data-debug-wrapper="true"] > * {
-    margin-left: inherit;
-    margin-right: inherit;
-    margin-top: inherit;
-    margin-bottom: inherit;
-    padding-left: inherit;
-    padding-right: inherit;
-    padding-top: inherit;
-    padding-bottom: inherit;
-    column-gap: inherit;
-    row-gap: inherit;
-    gap: inherit;
-    border-left-width: inherit;
-    border-right-width: inherit;
-    border-top-width: inherit;
-    border-bottom-width: inherit;
-    border-left-style: inherit;
-    border-right-style: inherit;
-    border-top-style: inherit;
-    border-bottom-style: inherit;
-    border-left-color: inherit;
-    border-right-color: inherit;
-    border-top-color: inherit;
-    border-bottom-color: inherit;
+  .font-heading {
+    font-family: 'Syne', sans-serif;
   }
 }
 
-
-/* Button Shadow Effects for Discuss Theme - Only on Primary Buttons */
+/* Button Shadow Effects for Discuss Themes - Only on Primary Buttons */
 @layer components {
-  .discuss button:not(:disabled):is([type="submit"], [data-primary="true"]),
-  .discuss a > button:not(:disabled):is([type="submit"], [data-primary="true"]) {
+  .discuss-light button:not(:disabled):is([type="submit"], [data-primary="true"]),
+  .discuss-dark button:not(:disabled):is([type="submit"], [data-primary="true"]),
+  .discuss-light a > button:not(:disabled):is([type="submit"], [data-primary="true"]),
+  .discuss-dark a > button:not(:disabled):is([type="submit"], [data-primary="true"]) {
     box-shadow: 3px 3px 0 rgba(239, 68, 68, 0.3);
     transition: all 0.15s ease;
   }
   
-  .discuss button:not(:disabled):is([type="submit"], [data-primary="true"]):hover,
-  .discuss a > button:not(:disabled):is([type="submit"], [data-primary="true"]):hover {
+  .discuss-light button:not(:disabled):is([type="submit"], [data-primary="true"]):hover,
+  .discuss-dark button:not(:disabled):is([type="submit"], [data-primary="true"]):hover,
+  .discuss-light a > button:not(:disabled):is([type="submit"], [data-primary="true"]):hover,
+  .discuss-dark a > button:not(:disabled):is([type="submit"], [data-primary="true"]):hover {
     box-shadow: 5px 5px 0 rgba(239, 68, 68, 0.4);
     transform: translate(-1px, -1px);
   }
   
-  .discuss button:not(:disabled):is([type="submit"], [data-primary="true"]):active,
-  .discuss a > button:not(:disabled):is([type="submit"], [data-primary="true"]):active {
+  .discuss-light button:not(:disabled):is([type="submit"], [data-primary="true"]):active,
+  .discuss-dark button:not(:disabled):is([type="submit"], [data-primary="true"]):active,
+  .discuss-light a > button:not(:disabled):is([type="submit"], [data-primary="true"]):active,
+  .discuss-dark a > button:not(:disabled):is([type="submit"], [data-primary="true"]):active {
     box-shadow: 1px 1px 0 rgba(239, 68, 68, 0.3);
     transform: translate(2px, 2px);
+  }
+}
+
+@keyframes spinner {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes loadingDots {
+  0%, 20% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.2;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
   }
 }
