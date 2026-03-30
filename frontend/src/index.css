@@ -52,7 +52,7 @@
     --ring: 216 100% 56%;
   }
 
-  /* Discuss Light Theme - Tech Mode (unchanged) */
+  /* Discuss Light Theme - Tech Mode */
   .discuss-light {
     --background: 0 0% 98%;
     --foreground: 0 0% 10%;
@@ -76,37 +76,11 @@
     --radius: 0rem;
   }
 
-  /* Discuss Dark Theme - Tech Mode (unchanged) */
-  .discuss-dark {
-    --background: 0 0% 7%;
-    --foreground: 0 0% 95%;
-    --card: 0 0% 10%;
-    --card-foreground: 0 0% 95%;
-    --popover: 0 0% 10%;
-    --popover-foreground: 0 0% 95%;
-    --primary: 0 84% 60%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 20%;
-    --secondary-foreground: 0 0% 95%;
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 60%;
-    --accent: 0 0% 15%;
-    --accent-foreground: 0 0% 95%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 20%;
-    --input: 0 0% 15%;
-    --ring: 0 84% 60%;
-    --radius: 0rem;
-  }
-
-  .discuss-light *,
-  .discuss-dark * {
+  .discuss-light * {
     border-radius: 0 !important;
   }
   
-  .discuss-light body,
-  .discuss-dark body {
+  .discuss-light body {
     font-family: 'Roboto Mono', 'Courier New', monospace !important;
   }
 }
@@ -141,28 +115,22 @@
   }
 }
 
-/* Button Shadow Effects for Discuss Themes - Only on Primary Buttons */
+/* Button Shadow Effects for Discuss Theme - Only on Primary Buttons */
 @layer components {
   .discuss-light button:not(:disabled):is([type="submit"], [data-primary="true"]),
-  .discuss-dark button:not(:disabled):is([type="submit"], [data-primary="true"]),
-  .discuss-light a > button:not(:disabled):is([type="submit"], [data-primary="true"]),
-  .discuss-dark a > button:not(:disabled):is([type="submit"], [data-primary="true"]) {
+  .discuss-light a > button:not(:disabled):is([type="submit"], [data-primary="true"]) {
     box-shadow: 3px 3px 0 rgba(239, 68, 68, 0.3);
     transition: all 0.15s ease;
   }
   
   .discuss-light button:not(:disabled):is([type="submit"], [data-primary="true"]):hover,
-  .discuss-dark button:not(:disabled):is([type="submit"], [data-primary="true"]):hover,
-  .discuss-light a > button:not(:disabled):is([type="submit"], [data-primary="true"]):hover,
-  .discuss-dark a > button:not(:disabled):is([type="submit"], [data-primary="true"]):hover {
+  .discuss-light a > button:not(:disabled):is([type="submit"], [data-primary="true"]):hover {
     box-shadow: 5px 5px 0 rgba(239, 68, 68, 0.4);
     transform: translate(-1px, -1px);
   }
   
   .discuss-light button:not(:disabled):is([type="submit"], [data-primary="true"]):active,
-  .discuss-dark button:not(:disabled):is([type="submit"], [data-primary="true"]):active,
-  .discuss-light a > button:not(:disabled):is([type="submit"], [data-primary="true"]):active,
-  .discuss-dark a > button:not(:disabled):is([type="submit"], [data-primary="true"]):active {
+  .discuss-light a > button:not(:disabled):is([type="submit"], [data-primary="true"]):active {
     box-shadow: 1px 1px 0 rgba(239, 68, 68, 0.3);
     transform: translate(2px, 2px);
   }

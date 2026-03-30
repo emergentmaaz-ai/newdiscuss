@@ -4,21 +4,21 @@ const ThemeContext = createContext(null);
 
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('discuss_theme') || 'light';
+    const saved = localStorage.getItem('discuss_theme') || 'light';
+    // Migrate old discuss-dark to discuss-light
+    return saved === 'discuss-dark' ? 'discuss-light' : saved;
   });
 
   useEffect(() => {
     const root = document.documentElement;
     // Remove all theme classes
-    root.classList.remove('dark', 'discuss', 'discuss-light', 'discuss-dark');
+    root.classList.remove('dark', 'discuss', 'discuss-light');
     
     // Add appropriate theme class
     if (theme === 'dark') {
       root.classList.add('dark');
     } else if (theme === 'discuss-light') {
       root.classList.add('discuss', 'discuss-light');
-    } else if (theme === 'discuss-dark') {
-      root.classList.add('discuss', 'discuss-dark');
     }
     
     localStorage.setItem('discuss_theme', theme);

@@ -18,7 +18,7 @@ export default function ThemeSelector() {
   const [pendingTheme, setPendingTheme] = useState(null);
 
   const handleThemeChange = (newTheme) => {
-    if ((newTheme === 'discuss-light' || newTheme === 'discuss-dark') && !theme.startsWith('discuss')) {
+    if (newTheme === 'discuss-light' && theme !== 'discuss-light') {
       setPendingTheme(newTheme);
       setShowConfirm(true);
     } else {
@@ -34,18 +34,17 @@ export default function ThemeSelector() {
     setPendingTheme(null);
   };
 
-  const isDiscussTheme = theme.startsWith('discuss');
+  const isDiscussTheme = theme === 'discuss-light';
 
   const themes = [
     { id: 'light', name: 'Light', icon: Sun },
     { id: 'dark', name: 'Dark', icon: Moon },
-    { id: 'discuss-light', name: 'Discuss Light', icon: Code },
-    { id: 'discuss-dark', name: 'Discuss Dark', icon: Code },
+    { id: 'discuss-light', name: 'Discuss', icon: Code },
   ];
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-2">
+      <div className="flex items-center gap-2">
         {themes.map((t) => {
           const Icon = t.icon;
           const isActive = theme === t.id;
@@ -58,8 +57,8 @@ export default function ThemeSelector() {
                 isActive
                   ? isDiscussTheme
                     ? 'border-[#EF4444] bg-[#EF4444] text-white'
-                    : 'border-[#2563EB] bg-[#2563EB] text-white'
-                  : 'border-[#E2E8F0] text-[#64748B] hover:border-[#2563EB]'
+                    : 'border-[#1D7AFF] bg-[#1D7AFF] text-white'
+                  : 'border-[#E2E6ED] text-[#6B7280] hover:border-[#1D7AFF]'
               }`}
             >
               <Icon className="w-3.5 h-3.5" />
@@ -74,10 +73,10 @@ export default function ThemeSelector() {
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
               <Code className="w-5 h-5 text-[#EF4444]" />
-              Switch to {pendingTheme === 'discuss-light' ? 'Discuss Light' : 'Discuss Dark'} Theme?
+              Switch to Discuss Theme?
             </AlertDialogTitle>
             <AlertDialogDescription>
-              This will apply a tech-inspired {pendingTheme === 'discuss-light' ? 'light' : 'dark'} theme with monospace fonts, red accents, and square edges. 
+              This will apply a tech-inspired theme with monospace fonts, red accents, and square edges. 
               You can switch back anytime from your profile settings.
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -91,7 +90,7 @@ export default function ThemeSelector() {
               onClick={confirmThemeChange}
               className="bg-[#EF4444] text-white hover:bg-[#DC2626] font-medium"
             >
-              Apply {pendingTheme === 'discuss-light' ? 'Discuss Light' : 'Discuss Dark'}
+              Apply Discuss Theme
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
